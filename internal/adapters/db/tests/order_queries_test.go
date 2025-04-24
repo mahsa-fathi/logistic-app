@@ -131,15 +131,15 @@ func TestPostgres_GetOngoingOrders(t *testing.T) {
 	t.Run("successful get", func(t *testing.T) {
 		order1, err := repo.CreateOrder(context.Background(), sender.ID, receiver.ID, provider.ID, nil)
 		assert.Empty(t, err)
-		order1, err = repo.UpdateOrderStatus(context.Background(), order1.ID, domain.GetOrderStatus().InProgress)
+		_, err = repo.UpdateOrderStatus(context.Background(), order1.ID, domain.GetOrderStatus().Pending)
 		assert.Empty(t, err)
-		_, err = repo.CreateOrder(context.Background(), sender.ID, receiver.ID, provider.ID, nil)
+		order2, err := repo.CreateOrder(context.Background(), sender.ID, receiver.ID, provider.ID, nil)
 		assert.Empty(t, err)
 
 		orders, err := repo.GetOngoingOrders(context.Background())
 		assert.Empty(t, err)
 		assert.Equal(t, 1, len(orders))
-		assert.Equal(t, order1.ID, orders[0].ID)
+		assert.Equal(t, order2.ID, orders[0].ID)
 	})
 }
 
