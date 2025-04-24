@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:12.3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: pg
+      POSTGRES_PASSWORD: pg_pass
+      POSTGRESS_DB: postgres
+    ports:
+      - "5432:5432"
+  db-test:
+    image: postgres:12.3
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRESS_DB: postgres
+    ports:
+      - "5431:5432"
+#  api:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      DB_ADDRESS: db
+#      DB_USER: pg
+#      DB_PASSWORD: pg_pass
+#      DB_NAME: postgres
+#    command: server
+#    ports:
+#      - "8080:8080"
+#    depends_on: [db]
+#  cronjobs:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      DB_ADDRESS: db
+#      DB_USER: pg
+#      DB_PASSWORD: pg_pass
+#      DB_NAME: postgres
+#    command: cron
+#    depends_on: [db]
+
+volumes:
+  postgres_data:

@@ -1,0 +1,51 @@
+name: CI Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: golang:1.22.0-alpine
+
+    services:
+      postgres:
+        image: postgres:12.3
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DB_TEST_HOST: postgres
+      DB_TEST_PORT: 5432
+      DB_TEST_USER: testuser
+      DB_TEST_PASSWORD: testpass
+      DB_TEST_NAME: postgres
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install git
+        run: apk add --no-cache git
+      - name: mod download
+        run: go mod download
+      - name: Run tests
+        run: go test -v -timeout 30s -cover ./...
+  lint:
+    runs-on: ubuntu-latest
+    container: golangci/golangci-lint:v1.60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run lint
+        run: golangci-lint run ./...
